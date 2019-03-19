@@ -119,9 +119,25 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="inc\HD44780.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\pwm.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\HD44780.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\pwm.c">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="inc\" />
+    <Folder Include="src" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
