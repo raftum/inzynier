@@ -16,6 +16,6 @@ void PWM_count_duty(uint32_t PWM_duty);
 //void PWM_change_duty(uint16_t percent);
 void PWM_select_mode(uint8_t selector);
 //uint8_t PWM_get_mode();
-
+void PWM_ICR();
 static uint8_t _mode;
 #endif // PWM_H

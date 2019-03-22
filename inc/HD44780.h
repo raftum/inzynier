@@ -34,7 +34,7 @@
 #define LCD_E_PIN		PIND
 #define LCD_E			(1 << PD2)
 
-#define LCD_DB4_DIR		DDRD
+#define LCD_DB4_DIR		DDRD  
 #define LCD_DB4_PORT	PORTD
 #define LCD_DB4_PIN		PIND
 #define LCD_DB4			(1 << PD6)
@@ -44,15 +44,15 @@
 #define LCD_DB5_PIN		PIND
 #define LCD_DB5			(1 << PD7)
 
-#define LCD_DB6_DIR		DDRB
-#define LCD_DB6_PORT	PORTB
-#define LCD_DB6_PIN		PINB
-#define LCD_DB6			(1 << PB6)
+#define LCD_DB6_DIR		DDRC      //by³o PB6, PB7, zamiana na PC.
+#define LCD_DB6_PORT	PORTC
+#define LCD_DB6_PIN		PINC
+#define LCD_DB6			(1 << PC0)
 
-#define LCD_DB7_DIR		DDRB
-#define LCD_DB7_PORT	PORTB
-#define LCD_DB7_PIN		PINB
-#define LCD_DB7			(1 << PB7)
+#define LCD_DB7_DIR		DDRC
+#define LCD_DB7_PORT	PORTC
+#define LCD_DB7_PIN		PINC
+#define LCD_DB7			(1 << PC1)
 
 //-------------------------------------------------------------------------------------------------
 //

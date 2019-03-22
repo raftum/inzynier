@@ -27,6 +27,16 @@ void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o r
 	OCR1A = 0; //PWM 50%
 	_mode = 0;
 }
+void PWM_ICR()
+{
+	 DDRB = DDRB | 1 << DDB2;
+	 TCCR1A = TCCR1A | 1 << COM1B1;
+	 TIMSK1 = TIMSK1 | 1 << OCIE1A;
+	 TCCR1A = (TCCR1A | 1 << WGM10) | 1 << WGM11;
+	 TCCR1B = (TCCR1B | 1 << WGM13) | 1 << WGM12 ;
+	 OCR1A = 200;
+	 TCCR1B = TCCR1B | 1 << CS10;
+}
 void Timer0_stop()
 {
 	TCCR1B &= ~((1<<CS10)|(1<<CS11)|(1<<CS12));//wylaczenie timera
@@ -43,7 +53,7 @@ void PWM_select_mode(uint8_t selector)
 		TCCR1A &= ~(1<<WGM11);
 		TCCR1A |= (1<<WGM10);
 		TCCR1B |= (1<<WGM12);
-		OCR1A=25; //fast o rozdz 8 bit
+		OCR1A=20; //fast o rozdz 8 bit
 		break;
 		case MODE_9BIT:
 		TCCR1A &=~(1<<WGM10);
