@@ -12,8 +12,8 @@
 
 enum enum_channel
 {
-	ADC3 = 2,
-	ADC2
+	ADC2 = 2,
+	ADC3
 };
 enum enum_channel channel;
 
@@ -25,13 +25,13 @@ void ADC_init()
 	converter->adc_switch = ADC2;
 	
 	//DDRC |= (1<<PC3) | (1<<PC2);
-    ADCSRA |= (1<<ADEN);
+    ADCSRA |= (1<<ADEN); //ustawienie tego bitu na 1 w³¹cza przetwornik ADC mikrokontrolera.
 
-	ADCSRA |= (1<<ADATE)|(1<<ADIF)|(1<<ADPS2)|(1<<ADPS0); // tryb ciaglej konwercji free run oraz ustawienie preskalera =32
+	ADCSRA |=/* (1<<ADATE)|*/(1<<ADIF)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1); // tryb ciaglej konwercji free run oraz ustawienie preskalera =32
 
 	ADMUX |= (1<<REFS0) | (1<<ADLAR) | (converter->adc_switch);
 	//ADCSRB &= ~( (1 << ADTS2) | (1 << ADTS1) | (1 << ADTS0) );
-	ADCSRB = (1 << ADTS2);
+	//ADCSRB = (1 << ADTS2);
 }
 
 void ADC_start()  //str 191 start konwersji
@@ -40,9 +40,10 @@ void ADC_start()  //str 191 start konwersji
 }
 
 void ADC_select_channel()
-{	
+{
+	
 	//ADMUX = converter->adc_switch;	
-	if(isDataReady)
+	if(1)
 	{		
 		switch(converter->adc_switch)
 		{

@@ -18,16 +18,16 @@
 //nowy projekt
 
 volatile char bufor[5];
-volatile int timerCount = 0;
+//volatile int timerCount = 0;
 int main(void)
 {
 	LCD_Initalize();
-    //PWM_init() ;
+    PWM_init() ;
+	ADC_init();
     ADC_start();
-    ADC_init();
     TIMER0_init();
-	//PWM_select_mode(0);
-	PWM_ICR();
+	PWM_select_mode(0);
+	//PWM_ICR();
 sei(); // wlaczenie globalnych przerwan
 	
 	uint16_t oblicz=0;
@@ -82,11 +82,13 @@ sei(); // wlaczenie globalnych przerwan
 		_delay_ms(200); 
 
 		LCD_Clear();
-	   if( timerCount > 1)
+		_delay_us(5);
+		
+	  /* if( timerCount > 1)
 	   {
 		   OCR1B =20;
 		   timerCount = 0;
-	   }
+	   }*/
 		/*if(converter->raw_voltage_output <= converter->raw_voltage_input )//512 //wart zad napiecie procesora
 		{
 			OCR1A++;
@@ -105,15 +107,22 @@ sei(); // wlaczenie globalnych przerwan
 
 ISR(TIMER0_OVF_vect)//przerwanie przepe³nienie timer0
 {
+	
+	TCNT0 = 0;  //Pocz¹tkowa wartoœæ licznika
+}
+ISR(ADC_vect)
+{
+	//LCD_GoTo(10,0);
+	//LCD_WriteText("test");
 	ADC_select_channel();
 	if(converter->adc_ready_flag == 1)
 	{
 		converter->adc_ready_flag = 0;
-		//pwm_select_algorithm();
+		pwm_select_algorithm();
 	}
-	TCNT0 = 0;  //Pocz¹tkowa wartoœæ licznika
+	ADC_start();
 }
-ISR(TIMER1_COMPA_vect)
+/*ISR(TIMER1_COMPA_vect)
 {
 	++timerCount;
-}
+}*/

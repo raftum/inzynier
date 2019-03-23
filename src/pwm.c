@@ -29,13 +29,13 @@ void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o r
 }
 void PWM_ICR()
 {
-	 DDRB = DDRB | 1 << DDB2;
-	 TCCR1A = TCCR1A | 1 << COM1B1;
-	 TIMSK1 = TIMSK1 | 1 << OCIE1A;
-	 TCCR1A = (TCCR1A | 1 << WGM10) | 1 << WGM11;
-	 TCCR1B = (TCCR1B | 1 << WGM13) | 1 << WGM12 ;
-	 OCR1A = 200;
-	 TCCR1B = TCCR1B | 1 << CS10;
+	 	 DDRB |= (1<<PB1);
+	 	 PORTB |= (1<<PB1);
+        TCCR1A |= (1<<COM1A1);
+		TCCR1B |= (1<<CS10); 
+		ICR1 |= 200;   //z 65535
+		OCR1A = 1;
+		
 }
 void Timer0_stop()
 {
