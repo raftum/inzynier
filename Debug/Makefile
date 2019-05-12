@@ -42,9 +42,11 @@ C_SRCS +=  \
 ../main.c \
 ../src/adc.c \
 ../src/boost_converter_algorithm.c \
+../src/button.c \
 ../src/HD44780.c \
 ../src/pwm.c \
-../src/timer0.c
+../src/timer0.c \
+../src/Usart.c
 
 
 PREPROCESSING_SRCS += 
@@ -57,33 +59,41 @@ OBJS +=  \
 main.o \
 src/adc.o \
 src/boost_converter_algorithm.o \
+src/button.o \
 src/HD44780.o \
 src/pwm.o \
-src/timer0.o
+src/timer0.o \
+src/Usart.o
 
 OBJS_AS_ARGS +=  \
 main.o \
 src/adc.o \
 src/boost_converter_algorithm.o \
+src/button.o \
 src/HD44780.o \
 src/pwm.o \
-src/timer0.o
+src/timer0.o \
+src/Usart.o
 
 C_DEPS +=  \
 main.d \
 src/adc.d \
 src/boost_converter_algorithm.d \
+src/button.d \
 src/HD44780.d \
 src/pwm.d \
-src/timer0.d
+src/timer0.d \
+src/Usart.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
 src/adc.d \
 src/boost_converter_algorithm.d \
+src/button.d \
 src/HD44780.d \
 src/pwm.d \
-src/timer0.d
+src/timer0.d \
+src/Usart.d
 
 OUTPUT_FILE_PATH +=praca_inzynierska.elf
 
@@ -99,6 +109,10 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

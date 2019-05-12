@@ -14,10 +14,11 @@
 #define MODE_8BIT 0
 #define MODE_9BIT 1
 #define MODE_10BIT 2
+#include <util/atomic.h>
 
 
 
-void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o rozdzieczlosci 8 bit. 0-255 ze sta³¹ czêstotliwosci¹ 31,25 Khz, zmiana wypelnienia 0,39 %
+void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o rozdzieczlosci 8 bit. 0-255 ze sta?? cz?stotliwosci? 31,25 Khz, zmiana wypelnienia 0,39 %
 {
 	DDRB |= (1<<PB1);
 	PORTB |= (1<<PB1);
@@ -28,19 +29,39 @@ void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o r
 	_mode = 0;
 }
 void PWM_ICR()
-{
-	 	 DDRB |= (1<<PB1);
-	 	 PORTB |= (1<<PB1);
-        TCCR1A |= (1<<COM1A1);
-		TCCR1B |= (1<<CS10); 
-		ICR1 |= 200;   //z 65535
-		OCR1A = 1;
-		
+{  
+	       /*ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	       {
+		       CLKPR = (1<<CLKPCE);
+		       CLKPR = (0<<CLKPCE) | (1<<CLKPS3)|(0<<CLKPS2)|(0<<CLKPS1)
+		       |(0<<CLKPS0); //Prescaler division = 1
+	       }*/
+
+			 DDRD |= (1<<PD5);
+			 PORTD |= (1<<PD5);
+			 //oba rejestry porównuj¹ wzgledem takiego samego licznka i OCR0A od czestotl a OCROB czs trwania impulsu/
+	         TCCR0A |= (1<<COM0A1)|(1 << COM0B1); // zerowal dla wypelnienie, 
+	         //TIMSK0 = TIMSK0 | 1 << OCIE0A;
+	         TCCR0A |= (1 << WGM00) | (1 << WGM01);
+	         TCCR0B |= (1 << WGM02);
+	         OCR0A = 199; // licznik, czestotliwosc ustala      255 - 78 KhZ
+	        TCCR0B |= (1 << CS10); //preskaler
+			 OCR0B = 10; // licznik, wypelnienie ustala
+			 /*DDRD = DDRD | 1 << DDD5;
+	         TCCR0A = TCCR0A | 1 << COM0B1;
+	         //TIMSK0 = TIMSK0 | 1 << OCIE0A;
+	         TCCR0A = (TCCR0A | 1 << WGM00) | 1 << WGM01;
+	         TCCR0B = TCCR0B | 1 << WGM02;
+	         OCR0A = 199;
+	        
+	         TCCR0B |= (1 << CS10);
+			 OCR0B = 1;*/
 }
 void Timer0_stop()
 {
-	TCCR1B &= ~((1<<CS10)|(1<<CS11)|(1<<CS12));//wylaczenie timera
-	TCNT1 = 0;
+	
+	TCCR0B &=~((1<<CS10)|(1<<CS11)|(1<<CS12));//wylaczenie timera
+	TCNT0 = 0;
 }
 void PWM_select_mode(uint8_t selector)
 {
@@ -50,21 +71,18 @@ void PWM_select_mode(uint8_t selector)
 	switch(selector)
 	{
 		case MODE_8BIT:
-		TCCR1A &= ~(1<<WGM11);
-		TCCR1A |= (1<<WGM10);
-		TCCR1B |= (1<<WGM12);
-		OCR1A=20; //fast o rozdz 8 bit
+		//TCCR0B |= (1 << CS10);
+		OCR0A = 199;
 		break;
+		
 		case MODE_9BIT:
-		TCCR1A &=~(1<<WGM10);
-		TCCR1A |= (1<<WGM11);
-		TCCR1B |= (1<<WGM12); //fast 9 bit
-		OCR1A = 20;
+		//TCCR0B |= (1 << CS10);
+		OCR0A = 255;
 		break;
+		
 		case MODE_10BIT:
-		TCCR1A |= (1<<WGM10)| (1<<WGM11);
-		TCCR1B |= (1<<WGM12); // fast 10 bit
-		OCR1A = 10;
+		//TCCR0B |= (1 << CS10);
+		OCR0A = 255;
 		break;
 		default:
 		;//do nothing

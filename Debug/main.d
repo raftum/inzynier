@@ -19,7 +19,7 @@ main.d main.o: .././main.c \
  d:\program\ files\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  d:\program\ files\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
  .././inc/HD44780.h .././inc/pwm.h .././inc/timer0.h .././inc/adc.h \
- .././inc/boost_converter_algorithm.h
+ .././inc/boost_converter_algorithm.h .././inc/button.h .././inc/Usart.h
 
 d:\program\ files\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -68,3 +68,7 @@ d:\program\ files\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include
 .././inc/adc.h:
 
 .././inc/boost_converter_algorithm.h:
+
+.././inc/button.h:
+
+.././inc/Usart.h:

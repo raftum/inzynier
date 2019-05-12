@@ -22,22 +22,22 @@
 #define LCD_RS_DIR		DDRD
 #define LCD_RS_PORT 	PORTD
 #define LCD_RS_PIN		PIND
-#define LCD_RS			(1 << PD0)
+#define LCD_RS			(1 << PD3)//(1 << PD0)
 
 #define LCD_RW_DIR		DDRD
 #define LCD_RW_PORT		PORTD
 #define LCD_RW_PIN		PIND
-#define LCD_RW			(1 << PD1)
+#define LCD_RW			(1 << PD4)//(1 << PD1)
 
 #define LCD_E_DIR		DDRD
 #define LCD_E_PORT		PORTD
 #define LCD_E_PIN		PIND
 #define LCD_E			(1 << PD2)
 
-#define LCD_DB4_DIR		DDRD  
-#define LCD_DB4_PORT	PORTD
-#define LCD_DB4_PIN		PIND
-#define LCD_DB4			(1 << PD6)
+#define LCD_DB4_DIR		DDRB   // By³o PD6
+#define LCD_DB4_PORT	PORTB
+#define LCD_DB4_PIN		PINB
+#define LCD_DB4			(1 << PB0)
 
 #define LCD_DB5_DIR		DDRD
 #define LCD_DB5_PORT	PORTD

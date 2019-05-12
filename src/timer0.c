@@ -8,7 +8,7 @@
 
 void TIMER0_init()
 {
-	TCCR0B|=(1<<CS01); //taktowanie 8 mln preskaler 8, czyli 1 mlm
+	TCCR0B|=(1<<CS01);//taktowanie 8 mln preskaler 8, czyli 1 mlm
 	TIMSK0|=(1<<TOIE0);
 	TCNT0 = 0;
 };

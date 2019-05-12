@@ -15,19 +15,27 @@
 #include "inc/timer0.h"
 #include "inc/adc.h"
 #include "inc/boost_converter_algorithm.h"
+#include "inc/button.h"
+#include "inc/Usart.h"
 //nowy projekt
-
+#define USART_BAUDRATE 9600
+#define Prescaler 20000000
+#define BAUD_PRESCALE (((Prescaler/(USART_BAUDRATE * 16UL))) - 1)
 volatile char bufor[5];
+
 //volatile int timerCount = 0;
 int main(void)
 {
+	USART_Init(BAUD_PRESCALE);
 	LCD_Initalize();
-    PWM_init() ;
+   // PWM_init() ;
 	ADC_init();
     ADC_start();
-    TIMER0_init();
-	PWM_select_mode(0);
-	//PWM_ICR();
+	BUTTON_Init();
+    //TIMER0_init();
+	//PWM_select_mode(0);
+	PWM_ICR();
+	//Timer0_stop();
 sei(); // wlaczenie globalnych przerwan
 	
 	uint16_t oblicz=0;
@@ -41,14 +49,20 @@ sei(); // wlaczenie globalnych przerwan
 	LCD_GoTo(0, 1);
 	LCD_WriteText("3:");
 	LCD_GoTo(11, 1);
-	LCD_WriteText("4:");*/
-	while (1) //Pêtla g³ówna
+	8LCD_WriteText("4:");*/
+   while (1) 
 	{
-		//BUTTON_check_pressed(); //sprawdz przycisk
-		//adc_wartosc_z_przetwornika=ADC_init(2);
-         
-	   
-         
+    char *data = USART_Receive();
+	LCD_GoTo(1,0);
+	LCD_WriteText(data);
+	_delay_ms(2000);
+	}
+	
+	/*while (1) //P?tla g?ówna
+	{
+	    //USART_Transmit('A');
+		
+       BUTTON_check_pressed(); //sprawdz przycisk
 		LCD_GoTo(0,0);
         itoa(converter->raw_voltage_input,bufor,10);
 		LCD_WriteText(bufor);
@@ -69,7 +83,7 @@ sei(); // wlaczenie globalnych przerwan
 		LCD_WriteText(bufor);
 		LCD_WriteText("  ");
 		LCD_GoTo(7,1);
-		oblicz = (converter->raw_voltage_output)*250; // 768 * 250   //1500
+		oblicz = (converter->raw_voltage_output)*568; // 768 * 250   //1500
 		oblicz = oblicz/25; //369   // w przypadku timer0 to bedzie polowa z 255 czyli 127.5
 		itoa(oblicz/100,bufor,10);      //konwersja wyniku do tablicy char
 		LCD_WriteText(bufor);//3
@@ -78,11 +92,11 @@ sei(); // wlaczenie globalnych przerwan
 		itoa(oblicz%100,bufor,10);
 		LCD_WriteText(bufor);//69
 		LCD_WriteText("V");
-		_delay_ms(200);         //opóŸnienie
+		_delay_ms(200);         //opó?nienie
 		_delay_ms(200); 
 
 		LCD_Clear();
-		_delay_us(5);
+		//_delay_us(5);
 		
 	  /* if( timerCount > 1)
 	   {
@@ -92,34 +106,34 @@ sei(); // wlaczenie globalnych przerwan
 		/*if(converter->raw_voltage_output <= converter->raw_voltage_input )//512 //wart zad napiecie procesora
 		{
 			OCR1A++;
-			if(OCR1A > 20) OCR1A = 20;            //ograniczenie wype³nienia zalozyl jaka wartosc nie chce przekroczyc, np 220
+			if(OCR1A > 20) OCR1A = 20;            //ograniczenie wype?nienia zalozyl jaka wartosc nie chce przekroczyc, np 220
 			blok = 0;
 		}
 		else
 		{
 			if(blok == 0) OCR1A --;
 			if(OCR1A < 1) blok = 1;
-
 		}*/
 
-	}
+	//} 
 }
 
-ISR(TIMER0_OVF_vect)//przerwanie przepe³nienie timer0
+ISR(TIMER0_OVF_vect)//przerwanie przepe?nienie timer0
 {
 	
-	TCNT0 = 0;  //Pocz¹tkowa wartoœæ licznika
+	TCNT0 = 0;  //Pocz?tkowa warto?? licznika
 }
 ISR(ADC_vect)
 {
 	//LCD_GoTo(10,0);
 	//LCD_WriteText("test");
 	ADC_select_channel();
-	if(converter->adc_ready_flag == 1)
-	{
-		converter->adc_ready_flag = 0;
-		pwm_select_algorithm();
-	}
+	 if(converter->adc_ready_flag == 1)
+	 {
+		 converter->adc_ready_flag = 0;
+		//pwm_algorithm();
+	 }
+	
 	ADC_start();
 }
 /*ISR(TIMER1_COMPA_vect)
