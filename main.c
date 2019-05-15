@@ -22,10 +22,13 @@
 #define Prescaler 20000000
 #define BAUD_PRESCALE (((Prescaler/(USART_BAUDRATE * 16UL))) - 1)
 volatile char bufor[5];
-
+extern uint8_t value_0CR0B;
 //volatile int timerCount = 0;
 int main(void)
 {
+	message msg;
+	msg.status = 0;
+	
 	USART_Init(BAUD_PRESCALE);
 	LCD_Initalize();
    // PWM_init() ;
@@ -39,29 +42,52 @@ int main(void)
 sei(); // wlaczenie globalnych przerwan
 	
 	uint16_t oblicz=0;
-	//uint8_t blok = 0; //zmienna blokujaca dalsze zmniejszenie OCR1A
-
-    //uint32_t wynik_pomiaru=0;
-	/*LCD_GoTo(0, 0);
-	LCD_WriteText("1:");
-	LCD_GoTo(7, 0);
-	LCD_WriteText("2:");
-	LCD_GoTo(0, 1);
-	LCD_WriteText("3:");
-	LCD_GoTo(11, 1);
-	8LCD_WriteText("4:");*/
-   while (1) 
-	{
-    char *data = USART_Receive();
-	LCD_GoTo(1,0);
-	LCD_WriteText(data);
-	_delay_ms(2000);
-	}
 	
-	/*while (1) //P?tla g?ówna
+	
+	/*while (1)
+	{
+		msg = USART_MessageManager();
+		if (msg.status)
+		{
+			LCD_GoTo(12,0);
+			switch (msg.len)
+			{
+				case(1):
+			    LCD_WriteText(msg.buffer);
+				break;
+				case(2):
+				 LCD_WriteText(msg.buffer);
+				break;
+				case (3):
+				 LCD_WriteText(msg.buffer);
+				break;
+			}
+		}
+	}*/
+	while (1) //P?tla g?ówna
 	{
 	    //USART_Transmit('A');
+		msg = USART_MessageManager();
+		if (msg.status)
+		{
+			LCD_GoTo(12,0);
+			//LCD_Clear();
+			switch (msg.len)
+			{
+				case(1):
+				LCD_WriteData(msg.buffer[0]);
+				break;
+				case(2):
+				LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
+				break;
+				case (3):
+				LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);LCD_WriteData(msg.buffer[2]);
+				break;
+			}
+			
+			value_0CR0B=atoi(msg.buffer);
 		
+		}
        BUTTON_check_pressed(); //sprawdz przycisk
 		LCD_GoTo(0,0);
         itoa(converter->raw_voltage_input,bufor,10);
@@ -92,10 +118,10 @@ sei(); // wlaczenie globalnych przerwan
 		itoa(oblicz%100,bufor,10);
 		LCD_WriteText(bufor);//69
 		LCD_WriteText("V");
-		_delay_ms(200);         //opó?nienie
-		_delay_ms(200); 
+		//_delay_ms(200);         //opó?nienie
+		//_delay_ms(200); 
 
-		LCD_Clear();
+		//LCD_Clear();
 		//_delay_us(5);
 		
 	  /* if( timerCount > 1)
@@ -115,7 +141,7 @@ sei(); // wlaczenie globalnych przerwan
 			if(OCR1A < 1) blok = 1;
 		}*/
 
-	//} 
+	} 
 }
 
 ISR(TIMER0_OVF_vect)//przerwanie przepe?nienie timer0
