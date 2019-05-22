@@ -22,16 +22,16 @@
 #define Prescaler 20000000
 #define BAUD_PRESCALE (((Prescaler/(USART_BAUDRATE * 16UL))) - 1)
 volatile char bufor[5];
-extern uint8_t value_0CR0B;
 //volatile int timerCount = 0;
 int main(void)
 {
 	message msg;
 	msg.status = 0;
+	uint8_t OCR0B_val = 0;
 	
 	USART_Init(BAUD_PRESCALE);
 	LCD_Initalize();
-   // PWM_init() ;
+    //PWM_init() ;
 	ADC_init();
     ADC_start();
 	BUTTON_Init();
@@ -66,27 +66,38 @@ sei(); // wlaczenie globalnych przerwan
 	}*/
 	while (1) //P?tla g?ówna
 	{
-	    //USART_Transmit('A');
-		msg = USART_MessageManager();
-		if (msg.status)
-		{
-			LCD_GoTo(12,0);
-			//LCD_Clear();
-			switch (msg.len)
-			{
-				case(1):
-				LCD_WriteData(msg.buffer[0]);
-				break;
-				case(2):
-				LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
-				break;
-				case (3):
-				LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);LCD_WriteData(msg.buffer[2]);
-				break;
-			}
-			
-			value_0CR0B=atoi(msg.buffer);
-		
+	   		msg = USART_MessageManager();
+	   		
+	   		if (msg.status)
+	   		{
+		   		char temp1[2];
+		   		char temp2[3];
+		   		char temp3[4];
+		   		
+		   		LCD_GoTo(12,0);
+		   		//LCD_Clear();
+		   		switch (msg.len)
+		   		{
+			   		case(1):
+			   		LCD_WriteData(msg.buffer[0]);
+			   		temp1[0] = msg.buffer[0]; temp1[1] = 'X';
+			   		OCR0B_val = (uint8_t)atoi(temp1);
+			   		break;
+			   		
+			   		case(2):
+			   		LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
+			   		temp2[0] = msg.buffer[0]; temp2[1] = msg.buffer[1]; temp2[2] = 'X';
+			   		OCR0B_val = (uint8_t)atoi(temp2);
+			   		break;
+			   		
+			   		case (3):
+			   		LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);LCD_WriteData(msg.buffer[2]);
+			   		temp3[0] = msg.buffer[0]; temp3[1] = msg.buffer[1]; temp3[2] = msg.buffer[2]; temp3[3] = 'X';
+			   		OCR0B_val = (uint8_t)atoi(temp3);
+			   		break;
+		   		}
+		   		PWM_UpdateOCR0B(OCR0B_val);
+	   		
 		}
        BUTTON_check_pressed(); //sprawdz przycisk
 		LCD_GoTo(0,0);

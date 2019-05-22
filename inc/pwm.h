@@ -5,6 +5,7 @@
  *  Author: Rafal
  */ 
 
+
 #ifndef PWM_H_
 #define PWM_H_
 
@@ -18,6 +19,6 @@ void PWM_count_duty(uint32_t PWM_duty);
 void PWM_select_mode(uint8_t selector);
 //uint8_t PWM_get_mode();
 void PWM_ICR();
-uint8_t value_0CR0B;
+void PWM_UpdateOCR0B(uint8_t value);
 static uint8_t _mode;
 #endif // PWM_H

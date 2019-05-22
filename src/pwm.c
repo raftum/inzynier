@@ -27,36 +27,35 @@ void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o r
 	TCCR1B |= (1<<CS10);  // preskaler 8000000 :1
 	OCR1A = 0; //PWM 50%
 	_mode = 0;
-    value_0CR0B=0;
 }
 void PWM_ICR()
 {  
-	       /*ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-	       {
-		       CLKPR = (1<<CLKPCE);
-		       CLKPR = (0<<CLKPCE) | (1<<CLKPS3)|(0<<CLKPS2)|(0<<CLKPS1)
-		       |(0<<CLKPS0); //Prescaler division = 1
-	       }*/
+   /*ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+   {
+	   CLKPR = (1<<CLKPCE);
+	   CLKPR = (0<<CLKPCE) | (1<<CLKPS3)|(0<<CLKPS2)|(0<<CLKPS1)
+	   |(0<<CLKPS0); //Prescaler division = 1
+   }*/
 
-			 DDRD |= (1<<PD5);
-			 PORTD |= (1<<PD5);
-			 //oba rejestry porównuj¹ wzgledem takiego samego licznka i OCR0A od czestotl a OCROB czs trwania impulsu/
-	         TCCR0A |= (1<<COM0A1)|(1 << COM0B1); // zerowal dla wypelnienie, 
-	         //TIMSK0 = TIMSK0 | 1 << OCIE0A;
-	         TCCR0A |= (1 << WGM00) | (1 << WGM01);
-	         TCCR0B |= (1 << WGM02);
-	         OCR0A = 199; // licznik, czestotliwosc ustala      255 - 78 KhZ
-	        TCCR0B |= (1 << CS10); //preskaler
-			 OCR0B = value_0CR0B; // licznik, wypelnienie ustala
-			 /*DDRD = DDRD | 1 << DDD5;
-	         TCCR0A = TCCR0A | 1 << COM0B1;
-	         //TIMSK0 = TIMSK0 | 1 << OCIE0A;
-	         TCCR0A = (TCCR0A | 1 << WGM00) | 1 << WGM01;
-	         TCCR0B = TCCR0B | 1 << WGM02;
-	         OCR0A = 199;
-	        
-	         TCCR0B |= (1 << CS10);
-			 OCR0B = 1;*/
+	DDRD |= (1<<PD5);
+	PORTD |= (1<<PD5);
+	//oba rejestry porównuj¹ wzgledem takiego samego licznka i OCR0A od czestotl a OCROB czs trwania impulsu/
+	TCCR0A |= (1<<COM0A1)|(1 << COM0B1); // zerowal dla wypelnienie, 
+	//TIMSK0 = TIMSK0 | 1 << OCIE0A;
+	TCCR0A |= (1 << WGM00) | (1 << WGM01);
+	TCCR0B |= (1 << WGM02);
+	OCR0A = 199; // licznik, czestotliwosc ustala      255 - 78 KhZ
+	TCCR0B |= (1 << CS10); //preskaler
+	OCR0B = 1; // licznik, wypelnienie ustala
+	/*DDRD = DDRD | 1 << DDD5;
+	TCCR0A = TCCR0A | 1 << COM0B1;
+	//TIMSK0 = TIMSK0 | 1 << OCIE0A;
+	TCCR0A = (TCCR0A | 1 << WGM00) | 1 << WGM01;
+	TCCR0B = TCCR0B | 1 << WGM02;
+	OCR0A = 199;
+
+	TCCR0B |= (1 << CS10);
+	OCR0B = 1;*/
 }
 
 void Timer0_stop()
@@ -90,4 +89,9 @@ void PWM_select_mode(uint8_t selector)
 		;//do nothing
 		break;
 	}
+}
+
+void PWM_UpdateOCR0B(uint8_t value)
+{
+	OCR0B = value;
 }
