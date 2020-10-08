@@ -1,32 +1,23 @@
-/*
- * pwm.c
- *
- * Created: 2019-03-19 22:24:22
- *  Author: Rafal
- */ 
+
 #include <util/delay.h>
 #include "../inc/pwm.h"
 
-#define MAX_8BIT 255
-#define MAX_9BIT 511
-#define MAX_10BIT 1023
-
-#define MODE_8BIT 0
-#define MODE_9BIT 1
-#define MODE_10BIT 2
+#define MODE_100KHZ 0
+#define MODE_40KHZ 1
+#define MODE_1KHZ 2
 #include <util/atomic.h>
 
 
 
 void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o rozdzieczlosci 8 bit. 0-255 ze sta?? cz?stotliwosci? 31,25 Khz, zmiana wypelnienia 0,39 %
 {
-	DDRB |= (1<<PB1);
-	PORTB |= (1<<PB1);
-	TCCR1A |= (1<<COM1A1); //| (1<<WGM10) ;// timer 16 bitowy
-	//TCCR1B |= (1<<WGM12);
-	TCCR1B |= (1<<CS10);  // preskaler 8000000 :1
-	OCR1A = 0; //PWM 50%
-	_mode = 0;
+	DDRB |= (1<<PB2);
+	PORTB |= (1<<PB2);
+	TCCR1A |= (1<<COM1B1) | (1<<COM1B0) |(1<<WGM10) |  (1<<WGM11) ;// timer 16 bitowy Fast PWM, 8-bit
+	TCCR1B |= (1<<WGM12)|(1<<WGM13);
+	TCCR1B |= (1<<CS10);  // preskaler 20000000 :1
+	OCR1A = 199; // czestotliwosc
+	OCR1B = 1; // wypelnienie
 }
 void PWM_ICR()
 {  
@@ -66,27 +57,24 @@ void Timer0_stop()
 }
 void PWM_select_mode(uint8_t selector)
 {
-	//PWM_init();
-	_mode = selector;
+	PWM_init();
+	int m = selector-48;
 	//selector = 0;
-	switch(selector)
+	switch(m)
 	{
-		case MODE_8BIT:
-		//TCCR0B |= (1 << CS10);
-		OCR0A = 199;
+		case MODE_100KHZ: //100khz
+			PWM_UpdateOCR1A(199);
 		break;
 		
-		case MODE_9BIT:
-		//TCCR0B |= (1 << CS10);
-		OCR0A = 255;
+		case MODE_40KHZ: //40khz
+			PWM_UpdateOCR1A(500);
 		break;
 		
-		case MODE_10BIT:
-		//TCCR0B |= (1 << CS10);
-		OCR0A = 255;
+		case MODE_1KHZ: //10khz
+			PWM_UpdateOCR1A(2000);
 		break;
 		default:
-		;//do nothing
+			;//do nothing
 		break;
 	}
 }
@@ -94,4 +82,20 @@ void PWM_select_mode(uint8_t selector)
 void PWM_UpdateOCR0B(uint8_t value)
 {
 	OCR0B = value;
+}
+
+void PWM_UpdateOCR1B(uint16_t value)
+{
+	cli();
+
+	OCR1B = value;
+		
+	sei();
+}
+
+void PWM_UpdateOCR1A(uint16_t value)
+{
+	cli();
+	OCR1A = value;
+	sei();
 }

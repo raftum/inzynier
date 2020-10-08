@@ -20,5 +20,7 @@ void PWM_select_mode(uint8_t selector);
 //uint8_t PWM_get_mode();
 void PWM_ICR();
 void PWM_UpdateOCR0B(uint8_t value);
+void PWM_UpdateOCR1B(uint16_t value);
+void PWM_UpdateOCR1A(uint16_t value);
 static uint8_t _mode;
 #endif // PWM_H

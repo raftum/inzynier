@@ -13,7 +13,7 @@
 typedef struct message
 {
 	uint8_t len;
-	unsigned char buffer[3];
+	unsigned char buffer[4];
 	uint8_t status;
 }message;
 void USART_Init( unsigned int baud);

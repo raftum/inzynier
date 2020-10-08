@@ -23,135 +23,95 @@
 #define BAUD_PRESCALE (((Prescaler/(USART_BAUDRATE * 16UL))) - 1)
 volatile char bufor[5];
 //volatile int timerCount = 0;
+
+long map(long x, long in_min, long in_max, long out_min, long out_max) {
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 int main(void)
 {
 	message msg;
 	msg.status = 0;
-	uint8_t OCR0B_val = 0;
+	uint16_t OCR1B_val = 0;
 	
 	USART_Init(BAUD_PRESCALE);
 	LCD_Initalize();
-    //PWM_init() ;
+	
+    PWM_init();
 	ADC_init();
     ADC_start();
-	BUTTON_Init();
-    //TIMER0_init();
+	//BUTTON_Init();
+    TIMER0_init();
 	//PWM_select_mode(0);
-	PWM_ICR();
+	//PWM_ICR();
 	//Timer0_stop();
 sei(); // wlaczenie globalnych przerwan
 	
-	uint16_t oblicz=0;
-	
-	
-	/*while (1)
-	{
-		msg = USART_MessageManager();
-		if (msg.status)
-		{
-			LCD_GoTo(12,0);
-			switch (msg.len)
-			{
-				case(1):
-			    LCD_WriteText(msg.buffer);
-				break;
-				case(2):
-				 LCD_WriteText(msg.buffer);
-				break;
-				case (3):
-				 LCD_WriteText(msg.buffer);
-				break;
-			}
-		}
-	}*/
 	while (1) //P?tla g?ówna
 	{
 	   		msg = USART_MessageManager();
-	   		
+			   
 	   		if (msg.status)
 	   		{
-		   		char temp1[2];
-		   		char temp2[3];
-		   		char temp3[4];
-		   		
-		   		LCD_GoTo(12,0);
+		   		char temp1[1];
+		   		char temp2[2];
+		   		char temp3[3];	
+				char liczba[4];
+				   			
+		   		OCR1B_val = 0;
+		   		//LCD_GoTo(12,0);
 		   		//LCD_Clear();
 		   		switch (msg.len)
-		   		{
-			   		case(1):
-			   		LCD_WriteData(msg.buffer[0]);
-			   		temp1[0] = msg.buffer[0]; temp1[1] = 'X';
-			   		OCR0B_val = (uint8_t)atoi(temp1);
+		   		{			   		
+					case(2):
+
+			   		//LCD_WriteData(msg.buffer[0]);
+			   			temp1[0] = msg.buffer[0]; 
+						//temp1[1] = '\0';
+			   			_mode = msg.buffer[1]; // mode			   			
+			   			OCR1B_val = (uint16_t)atoi(temp1);
+
 			   		break;
 			   		
-			   		case(2):
-			   		LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
-			   		temp2[0] = msg.buffer[0]; temp2[1] = msg.buffer[1]; temp2[2] = 'X';
-			   		OCR0B_val = (uint8_t)atoi(temp2);
+			   		case(3):
+			   		//LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
+			   			temp2[0] = msg.buffer[0]; 
+						temp2[1] = msg.buffer[1];
+						//temp2[2] = '\0';
+						_mode = msg.buffer[2]; //mode
+						OCR1B_val = (uint16_t)atoi(temp2);	
+			   	 
 			   		break;
 			   		
-			   		case (3):
-			   		LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);LCD_WriteData(msg.buffer[2]);
-			   		temp3[0] = msg.buffer[0]; temp3[1] = msg.buffer[1]; temp3[2] = msg.buffer[2]; temp3[3] = 'X';
-			   		OCR0B_val = (uint8_t)atoi(temp3);
+			   		case(4):
+			   		//LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);LCD_WriteData(msg.buffer[2]);
+			   			temp3[0] = msg.buffer[0]; 
+						temp3[1] = msg.buffer[1];
+						temp3[2] = msg.buffer[2];
+						//temp3[3] = '\0';
+						_mode = msg.buffer[3]; //mode
+						OCR1B_val = (uint16_t)atoi(temp3);
+    
 			   		break;
-		   		}
-		   		PWM_UpdateOCR0B(OCR0B_val);
-	   		
+		   		}				   
+				
+				if(_mode == '1') //40khz
+				{
+					OCR1B_val = map(OCR1B_val, 0, 199, 0, 500);
+				}
+				if(_mode == '2') //10khz
+				{
+					OCR1B_val = map(OCR1B_val, 0, 199, 0, 2000);
+				}
+				
+				sprintf(liczba, "%d", OCR1B_val);
+				LCD_WriteText(liczba);
+				
+				PWM_select_mode(_mode);
+		   		PWM_UpdateOCR1B(OCR1B_val/10);			  
+				     		
 		}
-       BUTTON_check_pressed(); //sprawdz przycisk
-		LCD_GoTo(0,0);
-        itoa(converter->raw_voltage_input,bufor,10);
-		LCD_WriteText(bufor);
-	    LCD_WriteText("  ");
-        LCD_GoTo(0,1);
-		oblicz = (converter->raw_voltage_input)*250; // 768 * 250     
-		oblicz = oblicz/127.5; //369   // w przypadku timer0 to bedzie polowa z 255 czyli 127.5
-		itoa(oblicz/100,bufor,10);      //konwersja wyniku do tablicy char
-		LCD_WriteText(bufor);//3
-		LCD_WriteText(",");//
-		itoa(oblicz%100,bufor,10);
-		LCD_WriteText(bufor);//69
-		LCD_WriteText("V");
-       
-		//--
-		LCD_GoTo(6,0);
-		itoa(converter->raw_voltage_output,bufor,10);
-		LCD_WriteText(bufor);
-		LCD_WriteText("  ");
-		LCD_GoTo(7,1);
-		oblicz = (converter->raw_voltage_output)*568; // 768 * 250   //1500
-		oblicz = oblicz/25; //369   // w przypadku timer0 to bedzie polowa z 255 czyli 127.5
-		itoa(oblicz/100,bufor,10);      //konwersja wyniku do tablicy char
-		LCD_WriteText(bufor);//3
-		
-		LCD_WriteText(",");//
-		itoa(oblicz%100,bufor,10);
-		LCD_WriteText(bufor);//69
-		LCD_WriteText("V");
-		//_delay_ms(200);         //opó?nienie
-		//_delay_ms(200); 
-
-		//LCD_Clear();
-		//_delay_us(5);
-		
-	  /* if( timerCount > 1)
-	   {
-		   OCR1B =20;
-		   timerCount = 0;
-	   }*/
-		/*if(converter->raw_voltage_output <= converter->raw_voltage_input )//512 //wart zad napiecie procesora
-		{
-			OCR1A++;
-			if(OCR1A > 20) OCR1A = 20;            //ograniczenie wype?nienia zalozyl jaka wartosc nie chce przekroczyc, np 220
-			blok = 0;
-		}
-		else
-		{
-			if(blok == 0) OCR1A --;
-			if(OCR1A < 1) blok = 1;
-		}*/
-
+		  
 	} 
 }
 

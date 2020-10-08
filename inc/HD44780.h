@@ -101,7 +101,7 @@
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
-
+void LCD_WriteText2(char * text, uint8_t len);
 void LCD_WriteCommand(unsigned char); //255
 unsigned char LCD_ReadStatus(void);
 void LCD_WriteData(unsigned char); // 255

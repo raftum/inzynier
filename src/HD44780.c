@@ -154,6 +154,15 @@ void LCD_WriteText(char * text)
 while(*text)
   LCD_WriteData(*text++);
 }
+void LCD_WriteText2(char * text, uint8_t len)
+{
+	uint8_t i = 0;
+	while(i < len)
+	{
+		LCD_WriteData(text[i]);
+		i++;
+	}
+}
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja ustawienia wspó³rzêdnych ekranowych

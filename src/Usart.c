@@ -53,42 +53,42 @@ message USART_MessageManager()
 	switch (state)
 	{
 		case(USART_Init_State):
-		ms.len = 0;
-		ms.buffer[0] = '0'; ms.buffer[1] = '0'; ms.buffer[2] = '0';
-		ms.status = USART_Message_NOK;
-		cnt = 0;
-		dummyMessage.len = 0;//informuje w main ze ramka/dane jeszcze nie przyszla
+			ms.len = 0;
+			ms.buffer[0] = '0'; ms.buffer[1] = '0'; ms.buffer[2] = '0'; ms.buffer[3] = '0';
+			ms.status = USART_Message_NOK;
+			cnt = 0;
+			dummyMessage.len = 0;//informuje w main ze ramka/dane jeszcze nie przyszla
 
-		state = USART_Get_Len_State;//przenosi do nowego stanu 
-		break;
+			state = USART_Get_Len_State;//przenosi do nowego stanu 
+			break;
 
 		case(USART_Get_Len_State):
 
-		ms.len = USART_Receive();
-		if (ms.len != Error && ms.len != 0 && ms.len <= 3) //zabezpieczenie
-		{
-			state = USART_Get_Data_State;
-			noMessageCnt = 0;
-		}
-		noMessageCnt++;
-		break;
+			ms.len = USART_Receive();
+			if (ms.len != Error && ms.len != 0 && ms.len <= 4) //zabezpieczenie
+			{
+				state = USART_Get_Data_State;
+				noMessageCnt = 0;
+			}
+			noMessageCnt++;
+			break;
 
 		case(USART_Get_Data_State):
-		datapart = USART_Receive();
+			datapart = USART_Receive();
 
-		if (datapart != Error && cnt < ms.len)
-		{
-			ms.buffer[cnt] = datapart;
-			cnt++;
-			noMessageCnt = 0;
-		}
-		if (cnt == ms.len)
-		{
-			ms.status = USART_Message_OK;
-			state = USART_Init_State;
-		}
-		noMessageCnt++;
-		break;
+			if (datapart != Error && cnt < ms.len)
+			{
+				ms.buffer[cnt] = datapart;
+				cnt++;
+				noMessageCnt = 0;
+			}
+			if (cnt == ms.len)
+			{
+				ms.status = USART_Message_OK;
+				state = USART_Init_State;
+			}
+			noMessageCnt++;
+			break;
 	}
 
 	if (noMessageCnt > USART_Message_Timeout)
