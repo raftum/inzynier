@@ -35,7 +35,7 @@ int main(void)
 	uint16_t OCR1B_val = 0;
 	
 	USART_Init(BAUD_PRESCALE);
-	LCD_Initalize();
+	//LCD_Initalize();
 	
     PWM_init();
 	ADC_init();
@@ -53,10 +53,9 @@ sei(); // wlaczenie globalnych przerwan
 			   
 	   		if (msg.status)
 	   		{
-		   		char temp1[1];
-		   		char temp2[2];
-		   		char temp3[3];	
-				char liczba[4];
+		   		char temp1[2];
+		   		char temp2[3];
+		   		char temp3[4];	
 				   			
 		   		OCR1B_val = 0;
 		   		//LCD_GoTo(12,0);
@@ -67,9 +66,9 @@ sei(); // wlaczenie globalnych przerwan
 
 			   		//LCD_WriteData(msg.buffer[0]);
 			   			temp1[0] = msg.buffer[0]; 
-						//temp1[1] = '\0';
+						temp1[1] = '\0';
 			   			_mode = msg.buffer[1]; // mode			   			
-			   			OCR1B_val = (uint16_t)atoi(temp1);
+			   			OCR1B_val = (uint8_t)atoi(temp1);
 
 			   		break;
 			   		
@@ -77,9 +76,9 @@ sei(); // wlaczenie globalnych przerwan
 			   		//LCD_WriteData(msg.buffer[0]);LCD_WriteData(msg.buffer[1]);
 			   			temp2[0] = msg.buffer[0]; 
 						temp2[1] = msg.buffer[1];
-						//temp2[2] = '\0';
+						temp2[2] = '\0';
 						_mode = msg.buffer[2]; //mode
-						OCR1B_val = (uint16_t)atoi(temp2);	
+						OCR1B_val = (uint8_t)atoi(temp2);	
 			   	 
 			   		break;
 			   		
@@ -88,7 +87,7 @@ sei(); // wlaczenie globalnych przerwan
 			   			temp3[0] = msg.buffer[0]; 
 						temp3[1] = msg.buffer[1];
 						temp3[2] = msg.buffer[2];
-						//temp3[3] = '\0';
+						temp3[3] = '\0';
 						_mode = msg.buffer[3]; //mode
 						OCR1B_val = (uint16_t)atoi(temp3);
     
@@ -104,11 +103,8 @@ sei(); // wlaczenie globalnych przerwan
 					OCR1B_val = map(OCR1B_val, 0, 199, 0, 2000);
 				}
 				
-				sprintf(liczba, "%d", OCR1B_val);
-				LCD_WriteText(liczba);
-				
 				PWM_select_mode(_mode);
-		   		PWM_UpdateOCR1B(OCR1B_val/10);			  
+		   		PWM_UpdateOCR1B(OCR1B_val);			  
 				     		
 		}
 		  

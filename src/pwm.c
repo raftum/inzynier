@@ -17,7 +17,7 @@ void PWM_init() //konfiguracja fast PWM propozycja uzycia 16 bitowego Timera o r
 	TCCR1B |= (1<<WGM12)|(1<<WGM13);
 	TCCR1B |= (1<<CS10);  // preskaler 20000000 :1
 	OCR1A = 199; // czestotliwosc
-	OCR1B = 1; // wypelnienie
+	OCR1B = 199; // wypelnienie
 }
 void PWM_ICR()
 {  
